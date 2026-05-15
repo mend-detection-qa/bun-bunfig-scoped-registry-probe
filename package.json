@@ -1,0 +1,9 @@
+{
+  "name": "bun-bunfig-scoped-registry-probe",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@myorg/private-utils": "^1.0.0",
+    "hono": "^4.12.0"
+  }
+}

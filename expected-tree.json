@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "pm": "bun",
+  "pm_version_tested": "1.2.0",
+  "source_file": "bun.lock",
+  "generated_at": "2026-05-15T00:00:00+00:00",
+  "root": {
+    "name": "bun-bunfig-scoped-registry-probe",
+    "version": "0.1.0",
+    "dependencies": [
+      "@myorg/private-utils",
+      "hono"
+    ]
+  },
+  "packages": {
+    "@myorg/private-utils": {
+      "version": "1.0.0",
+      "source": "private-index",
+      "group": "main",
+      "dependencies": [],
+      "source_detail": {
+        "registry": "https://npm.example.com/"
+      }
+    },
+    "hono": {
+      "version": "4.12.18",
+      "source": "registry",
+      "group": "main",
+      "dependencies": [],
+      "source_detail": {
+        "registry": "https://registry.npmjs.org"
+      }
+    }
+  },
+  "project_metadata": {
+    "source_file": "bun.lock",
+    "config_files": [
+      "bunfig.toml"
+    ],
+    "groups": [
+      "main"
+    ],
+    "bunfig": {
+      "install": {
+        "registry": "https://registry.npmjs.org"
+      },
+      "install_scopes": {
+        "@myorg": "https://npm.example.com/"
+      }
+    }
+  },
+  "mend_config": {
+    "whitesource_file_present": false,
+    "rationale": "Bun is NOT in the Mend install-tool list. scanSettings.versioning cannot pin a Bun toolchain. No .whitesource file is emitted — detection is lockfile-driven (bun.lock JSONC parsing)."
+  },
+  "warnings": [
+    "Bun is NOT a UA-supported resolver (js-bun is Bucket C in whitesource-config.md). No .whitesource file is emitted — manual tool version pinning via scanSettings.versioning is impossible for this ecosystem. Detection is lockfile-driven (bun.lock JSONC parsing). Reproducibility guarantee is reduced.",
+    "BUNFIG.TOML SIGNAL: The [install.scopes] block in bunfig.toml maps '@myorg' to 'https://npm.example.com/'. Mend MUST read bunfig.toml and apply this mapping to classify @myorg/private-utils as source: 'private-index'. If Mend ignores bunfig.toml, both packages fall back to source: 'registry' — that is the primary failure mode this probe is designed to expose.",
+    "SCOPED PACKAGE FAILURE MODE: If Mend does not read bunfig.toml or does not apply [install.scopes], @myorg/private-utils will be reported as source: 'registry' with registry: 'https://registry.npmjs.org'. That is wrong — the package is from the private registry at npm.example.com.",
+    "CONTROL PACKAGE INVARIANT: hono must report source: 'registry' with registry: 'https://registry.npmjs.org'. If Mend misapplies the scoped registry rule to ALL packages (not just @myorg/* scoped ones), hono would incorrectly report source: 'private-index'. That is a distinct bug from the primary failure mode.",
+    "STUB PACKAGE NOTE: @myorg/private-utils@1.0.0 does not exist on the public npm registry. npm.example.com is a fictional registry URL. The lockfile entry uses a placeholder integrity hash. The Mend scanner should parse the lockfile entry as-recorded, regardless of registry reachability during scan time.",
+    "SOURCE TYPE MAPPING: bunfig.toml [install.scopes] registry assignment maps to Mend source type 'private-index'. This is distinct from 'registry' (public npm), 'git' (git+https / github:), 'url' (tarball URL), and 'local' (file:/link:). The code path for reading bunfig.toml is separate from manifest-side source detection.",
+    "Per open question Q4 in docs/BUN_COVERAGE_PLAN.md §9: 'Does Mend read bunfig.toml?' This probe is the designated instrument to answer that question. If the scan reports @myorg/private-utils as source: 'registry', the answer is No and a Mend bug should be filed.",
+    "Related probe: bun-basic-registry-probe (Tier 1 #1) exercises the basic registry path without bunfig.toml. Cross-compare: if both probes report source: 'registry' for hono, the hono detection path is stable. If this probe additionally reports @myorg/private-utils as source: 'registry', bunfig.toml reading is confirmed broken."
+  ]
+}
